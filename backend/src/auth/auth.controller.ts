@@ -9,7 +9,8 @@ class RegisterDto {
 }
 
 class LoginDto {
-  username: string;
+  username?: string;
+  email?: string;
   password: string;
 }
 
@@ -24,7 +25,8 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    const user = await this.authService.validateUser(loginDto.username, loginDto.password);
+    const identifier = loginDto.username || loginDto.email || '';
+    const user = await this.authService.validateUser(identifier, loginDto.password);
     return this.authService.login(user);
   }
 

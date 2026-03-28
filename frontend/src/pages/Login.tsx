@@ -152,7 +152,7 @@ const Login = () => {
     e.preventDefault()
     
     try {
-      await dispatch(login({ email, password })).unwrap()
+      await dispatch(login({ username: email, password })).unwrap()
       navigate('/character-select')
     } catch (err) {
       console.error('Login failed:', err)

@@ -10,8 +10,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.usersService.findByUsername(username);
+  async validateUser(identifier: string, password: string): Promise<any> {
+    // 支持用户名或邮箱登录
+    const user = await this.usersService.findByUsername(identifier) || 
+                 await this.usersService.findByEmail(identifier);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }

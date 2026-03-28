@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
   private users: Map<string, any> = new Map();
   private emailToId: Map<string, string> = new Map();
+  private usernameToId: Map<string, string> = new Map();
   private idCounter = 1;
 
   constructor(
@@ -14,9 +15,14 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
-    // 先检查内存中的用户
-    const userId = this.emailToId.get(email);
+  async validateUser(identifier: string, password: string): Promise<any> {
+    // 先通过邮箱查找
+    let userId = this.emailToId.get(identifier);
+    // 如果邮箱没找到，尝试通过用户名查找
+    if (!userId) {
+      userId = this.usernameToId.get(identifier);
+    }
+    
     if (userId) {
       const user = this.users.get(userId);
       if (user && await bcrypt.compare(password, user.password)) {
@@ -24,7 +30,7 @@ export class AuthService {
         return result;
       }
     }
-    return null;
+    throw new UnauthorizedException('用户名或密码错误');
   }
 
   async login(user: any) {
@@ -57,6 +63,7 @@ export class AuthService {
 
     this.users.set(id, user);
     this.emailToId.set(user.email, id);
+    this.usernameToId.set(user.username, id);
 
     return this.login(user);
   }

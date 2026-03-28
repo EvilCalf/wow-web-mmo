@@ -2,6 +2,8 @@
 
 &gt; 基于魔兽世界IP的轻量级Web回合制MMO游戏，还原经典职业、技能、天赋和副本
 
+🌐 **线上访问地址**: https://wow.evilcalf.online
+
 ## 🎯 核心定位
 - **锚点版本**：魔兽世界 `巫妖王之怒 (WLK)` 版本（玩家认知度最高，内容最成熟）
 - **玩法**：经典回合制战斗 + 角色养成 + 副本探索 + 社交系统
@@ -37,6 +39,11 @@
 - 腾讯云/阿里云 轻量应用服务器
 
 ## 🚀 快速开始
+
+### 🌐 线上体验
+直接访问：https://wow.evilcalf.online
+
+### 💻 本地开发
 ```bash
 # 克隆项目
 git clone https://github.com/EvilCalf/wow-web-mmo.git
@@ -45,8 +52,9 @@ cd wow-web-mmo
 # 开发环境启动
 docker-compose up -d
 
-# 访问
-http://localhost:5173
+# 本地访问
+前端: http://localhost:3002
+后端: http://localhost:3001
 ```
 
 ## 🤝 开发协作

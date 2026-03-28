@@ -1,21 +1,13 @@
-import { Outlet } from 'react-router-dom'
-import styled from 'styled-components'
+import { ReactNode } from 'react'
 
-const AppContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background: linear-gradient(to bottom, #0a0e27, #1a1f3a);
-  font-family: 'Arial', sans-serif;
-  color: #ffffff;
-`
-
-const Layout = () => {
-  return (
-    <AppContainer>
-      <Outlet />
-    </AppContainer>
-  )
+interface LayoutProps {
+  children: ReactNode
 }
 
-export default Layout
+export const Layout = ({ children }: LayoutProps) => {
+  return (
+    <div className="min-h-screen bg-gray-900">
+      {children}
+    </div>
+  )
+}

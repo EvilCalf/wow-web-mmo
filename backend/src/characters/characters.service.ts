@@ -1,217 +1,119 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Character, CharacterClass, CharacterRace, Faction } from './character.entity';
+import { Injectable } from '@nestjs/common';
+import { Character, CharacterStats } from './character.entity';
+
+const classData = [
+  { id: 'warrior', name: '战士', stats: { strength: 90, agility: 50, stamina: 100, intellect: 30, spirit: 40 } },
+  { id: 'paladin', name: '圣骑士', stats: { strength: 70, agility: 40, stamina: 85, intellect: 60, spirit: 70 } },
+  { id: 'hunter', name: '猎人', stats: { strength: 40, agility: 95, stamina: 75, intellect: 45, spirit: 50 } },
+  { id: 'rogue', name: '潜行者', stats: { strength: 50, agility: 100, stamina: 70, intellect: 25, spirit: 35 } },
+  { id: 'priest', name: '牧师', stats: { strength: 30, agility: 40, stamina: 65, intellect: 100, spirit: 90 } },
+  { id: 'death_knight', name: '死亡骑士', stats: { strength: 85, agility: 55, stamina: 95, intellect: 40, spirit: 30 } },
+  { id: 'shaman', name: '萨满祭司', stats: { strength: 60, agility: 50, stamina: 75, intellect: 85, spirit: 70 } },
+  { id: 'mage', name: '法师', stats: { strength: 25, agility: 35, stamina: 60, intellect: 105, spirit: 65 } },
+  { id: 'warlock', name: '术士', stats: { strength: 30, agility: 35, stamina: 65, intellect: 100, spirit: 60 } },
+  { id: 'monk', name: '武僧', stats: { strength: 65, agility: 85, stamina: 80, intellect: 50, spirit: 60 } },
+];
 
 @Injectable()
 export class CharactersService {
-  constructor(
-    @InjectRepository(Character)
-    private charactersRepository: Repository<Character>,
-  ) {}
+  private characters: Map<string, Character> = new Map();
+  private userCharacters: Map<string, string[]> = new Map();
+  private idCounter = 1;
 
-  async findAll(userId?: number): Promise<Character[]> {
-    const where = userId ? { userId, isActive: true } : { isActive: true };
-    return this.charactersRepository.find({ where, relations: ['user'] });
+  private getClassData(classId: string) {
+    return classData.find(c => c.id === classId);
   }
 
-  async findOne(id: number): Promise<Character | null> {
-    return this.charactersRepository.findOne({ where: { id }, relations: ['user'] });
-  }
-
-  async findByUserId(userId: number): Promise<Character[]> {
-    return this.charactersRepository.find({ where: { userId, isActive: true } });
-  }
-
-  async create(character: Partial<Character>): Promise<Character> {
-    // 检查角色名是否已存在
-    const existingCharacter = await this.charactersRepository.findOne({ where: { name: character.name } });
-    if (existingCharacter) {
-      throw new NotFoundException('Character name already exists');
-    }
-
-    // 根据种族设置阵营
-    const allianceRaces = [CharacterRace.HUMAN, CharacterRace.DWARF, CharacterRace.NIGHT_ELF, CharacterRace.GNOME, CharacterRace.DRAENEI];
-    const hordeRaces = [CharacterRace.ORC, CharacterRace.UNDEAD, CharacterRace.TAUREN, CharacterRace.TROLL, CharacterRace.BLOOD_ELF];
+  private calculateStats(classData: any, level: number): CharacterStats {
+    const baseStats = { ...classData.stats };
+    const levelMultiplier = 1 + (level - 1) * 0.1;
     
-    if (allianceRaces.includes(character.race)) {
-      character.faction = Faction.ALLIANCE;
-    } else if (hordeRaces.includes(character.race)) {
-      character.faction = Faction.HORDE;
-    }
-
-    // 根据职业设置基础属性
-    this.setBaseStats(character);
-
-    const newCharacter = this.charactersRepository.create(character);
-    return this.charactersRepository.save(newCharacter);
-  }
-
-  private setBaseStats(character: Partial<Character>) {
-    switch (character.class) {
-      case CharacterClass.WARRIOR:
-        character.strength = 15;
-        character.agility = 10;
-        character.intellect = 5;
-        character.stamina = 15;
-        character.spirit = 5;
-        character.maxHealth = 150;
-        character.health = 150;
-        character.maxMana = 0;
-        character.mana = 0;
-        break;
-      case CharacterClass.MAGE:
-        character.strength = 5;
-        character.agility = 8;
-        character.intellect = 20;
-        character.stamina = 8;
-        character.spirit = 15;
-        character.maxHealth = 80;
-        character.health = 80;
-        character.maxMana = 150;
-        character.mana = 150;
-        break;
-      case CharacterClass.HUNTER:
-        character.strength = 10;
-        character.agility = 18;
-        character.intellect = 8;
-        character.stamina = 12;
-        character.spirit = 7;
-        character.maxHealth = 120;
-        character.health = 120;
-        character.maxMana = 80;
-        character.mana = 80;
-        break;
-      case CharacterClass.PRIEST:
-        character.strength = 5;
-        character.agility = 7;
-        character.intellect = 18;
-        character.stamina = 8;
-        character.spirit = 17;
-        character.maxHealth = 80;
-        character.health = 80;
-        character.maxMana = 140;
-        character.mana = 140;
-        break;
-      case CharacterClass.ROGUE:
-        character.strength = 10;
-        character.agility = 20;
-        character.intellect = 5;
-        character.stamina = 12;
-        character.spirit = 6;
-        character.maxHealth = 120;
-        character.health = 120;
-        character.maxMana = 0;
-        character.mana = 0;
-        break;
-      case CharacterClass.SHAMAN:
-        character.strength = 12;
-        character.agility = 8;
-        character.intellect = 15;
-        character.stamina = 12;
-        character.spirit = 10;
-        character.maxHealth = 120;
-        character.health = 120;
-        character.maxMana = 120;
-        character.mana = 120;
-        break;
-      case CharacterClass.PALADIN:
-        character.strength = 14;
-        character.agility = 8;
-        character.intellect = 10;
-        character.stamina = 14;
-        character.spirit = 8;
-        character.maxHealth = 140;
-        character.health = 140;
-        character.maxMana = 80;
-        character.mana = 80;
-        break;
-      case CharacterClass.WARLOCK:
-        character.strength = 5;
-        character.agility = 7;
-        character.intellect = 19;
-        character.stamina = 9;
-        character.spirit = 15;
-        character.maxHealth = 90;
-        character.health = 90;
-        character.maxMana = 140;
-        character.mana = 140;
-        break;
-      case CharacterClass.DRUID:
-        character.strength = 10;
-        character.agility = 10;
-        character.intellect = 15;
-        character.stamina = 10;
-        character.spirit = 15;
-        character.maxHealth = 100;
-        character.health = 100;
-        character.maxMana = 120;
-        character.mana = 120;
-        break;
-      default:
-        break;
-    }
-  }
-
-  async update(id: number, character: Partial<Character>): Promise<Character | null> {
-    await this.charactersRepository.update(id, character);
-    return this.findOne(id);
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.charactersRepository.update(id, { isActive: false });
-  }
-
-  async addExperience(id: number, experience: number): Promise<Character | null> {
-    const character = await this.findOne(id);
-    if (!character) {
-      throw new NotFoundException('Character not found');
-    }
-
-    character.experience += experience;
-    const requiredExperience = character.level * 1000;
+    const stats = {
+      strength: Math.floor(baseStats.strength * levelMultiplier),
+      agility: Math.floor(baseStats.agility * levelMultiplier),
+      stamina: Math.floor(baseStats.stamina * levelMultiplier),
+      intellect: Math.floor(baseStats.intellect * levelMultiplier),
+      spirit: Math.floor(baseStats.spirit * levelMultiplier),
+    };
     
-    // 升级逻辑
-    while (character.experience >= requiredExperience) {
-      character.experience -= requiredExperience;
+    const maxHealth = stats.stamina * 10 + 100;
+    const maxMana = stats.intellect * 15 + 50;
+    
+    return {
+      ...stats,
+      health: maxHealth,
+      maxHealth,
+      mana: maxMana,
+      maxMana,
+    };
+  }
+
+  async create(userId: string, characterData: any): Promise<Character> {
+    const cls = this.getClassData(characterData.class);
+    if (!cls) {
+      throw new Error('职业不存在');
+    }
+
+    const id = `char_${this.idCounter++}`;
+    const character: Character = {
+      id,
+      userId,
+      name: characterData.name,
+      class: characterData.class,
+      spec: characterData.spec || 'primary',
+      faction: characterData.faction,
+      level: 1,
+      experience: 0,
+      stats: this.calculateStats(cls, 1),
+      equipment: {},
+      inventory: [],
+      talents: {},
+      createdAt: new Date(),
+    };
+
+    this.characters.set(id, character);
+    
+    if (!this.userCharacters.has(userId)) {
+      this.userCharacters.set(userId, []);
+    }
+    this.userCharacters.get(userId)!.push(id);
+
+    return character;
+  }
+
+  async findByUser(userId: string): Promise<Character[]> {
+    const charIds = this.userCharacters.get(userId) || [];
+    return charIds.map(id => this.characters.get(id)!).filter(Boolean);
+  }
+
+  async findById(id: string): Promise<Character | null> {
+    return this.characters.get(id) || null;
+  }
+
+  async update(id: string, updateData: Partial<Character>): Promise<Character | null> {
+    const character = this.characters.get(id);
+    if (!character) return null;
+    Object.assign(character, updateData);
+    return character;
+  }
+
+  async addExperience(id: string, amount: number): Promise<Character | null> {
+    const character = this.characters.get(id);
+    if (!character) return null;
+
+    character.experience += amount;
+    const expNeeded = character.level * 1000;
+    
+    while (character.experience >= expNeeded && character.level < 80) {
+      character.experience -= expNeeded;
       character.level += 1;
-      this.levelUpStats(character);
+      
+      const cls = this.getClassData(character.class);
+      if (cls) {
+        character.stats = this.calculateStats(cls, character.level);
+      }
     }
 
-    return this.update(id, character);
-  }
-
-  private levelUpStats(character: Character) {
-    switch (character.class) {
-      case CharacterClass.WARRIOR:
-        character.strength += 3;
-        character.stamina += 3;
-        character.maxHealth += 30;
-        break;
-      case CharacterClass.MAGE:
-        character.intellect += 4;
-        character.stamina += 2;
-        character.maxHealth += 15;
-        character.maxMana += 25;
-        break;
-      case CharacterClass.HUNTER:
-        character.agility += 3;
-        character.stamina += 2;
-        character.intellect += 2;
-        character.maxHealth += 25;
-        character.maxMana += 15;
-        break;
-      default:
-        character.strength += 2;
-        character.agility += 2;
-        character.intellect += 2;
-        character.stamina += 2;
-        character.spirit += 2;
-        character.maxHealth += 20;
-        character.maxMana += 20;
-        break;
-    }
-    character.health = character.maxHealth;
-    character.mana = character.maxMana;
+    return character;
   }
 }

@@ -2,9 +2,12 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
+// 简化版本的 JWT guard，不依赖注入
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  private jwtService = new JwtService({
+    secret: 'wow-web-mmo-secret-key-2024',
+  });
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -16,9 +19,9 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: 'wow-web-mmo-secret-key-2026',
+        secret: 'wow-web-mmo-secret-key-2024',
       });
-      request.user = { id: payload.sub, username: payload.username };
+      request.user = { id: payload.sub, email: payload.email };
     } catch {
       throw new UnauthorizedException('Invalid token');
     }

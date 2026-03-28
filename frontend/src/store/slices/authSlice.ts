@@ -1,45 +1,59 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
-import { AuthState, User } from '@/types'
 import api from '@/utils/api'
 
+interface User {
+  id: string
+  email: string
+  username: string
+}
+
+interface AuthState {
+  user: User | null
+  token: string | null
+  isAuthenticated: boolean
+  loading: boolean
+  error: string | null
+}
+
 const initialState: AuthState = {
-  token: localStorage.getItem('token'),
   user: null,
+  token: localStorage.getItem('token'),
+  isAuthenticated: false,
   loading: false,
   error: null,
 }
 
+// 登录
 export const login = createAsyncThunk(
   'auth/login',
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await api.post('/auth/login', credentials)
       const { access_token, user } = response.data
-      const token = access_token
-      localStorage.setItem('token', token)
-      return { token, user }
+      localStorage.setItem('token', access_token)
+      return { token: access_token, user }
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Login failed')
+      return rejectWithValue(error.response?.data?.message || '登录失败')
     }
   }
 )
 
+// 注册
 export const register = createAsyncThunk(
   'auth/register',
-  async (userData: { username: string; email: string; password: string }, { rejectWithValue }) => {
+  async (userData: { email: string; password: string; username?: string }, { rejectWithValue }) => {
     try {
       const response = await api.post('/auth/register', userData)
       const { access_token, user } = response.data
-      const token = access_token
-      localStorage.setItem('token', token)
-      return { token, user }
+      localStorage.setItem('token', access_token)
+      return { token: access_token, user }
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Registration failed')
+      return rejectWithValue(error.response?.data?.message || '注册失败')
     }
   }
 )
 
+// 获取当前用户
 export const getCurrentUser = createAsyncThunk(
   'auth/getCurrentUser',
   async (_, { rejectWithValue }) => {
@@ -48,32 +62,35 @@ export const getCurrentUser = createAsyncThunk(
       return response.data
     } catch (error: any) {
       localStorage.removeItem('token')
-      return rejectWithValue(error.response?.data?.message || 'Failed to get user')
+      return rejectWithValue(error.response?.data?.message || '获取用户信息失败')
     }
   }
 )
+
+// 登出
+export const logout = createAsyncThunk('auth/logout', async () => {
+  localStorage.removeItem('token')
+  return null
+})
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: (state) => {
-      state.token = null
-      state.user = null
-      localStorage.removeItem('token')
-    },
     clearError: (state) => {
       state.error = null
     },
   },
   extraReducers: (builder) => {
     builder
+      // 登录
       .addCase(login.pending, (state) => {
         state.loading = true
         state.error = null
       })
-      .addCase(login.fulfilled, (state, action: PayloadAction<{ token: string; user: User }>) => {
+      .addCase(login.fulfilled, (state, action) => {
         state.loading = false
+        state.isAuthenticated = true
         state.token = action.payload.token
         state.user = action.payload.user
       })
@@ -81,12 +98,14 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload as string
       })
+      // 注册
       .addCase(register.pending, (state) => {
         state.loading = true
         state.error = null
       })
-      .addCase(register.fulfilled, (state, action: PayloadAction<{ token: string; user: User }>) => {
+      .addCase(register.fulfilled, (state, action) => {
         state.loading = false
+        state.isAuthenticated = true
         state.token = action.payload.token
         state.user = action.payload.user
       })
@@ -94,21 +113,29 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload as string
       })
+      // 获取当前用户
       .addCase(getCurrentUser.pending, (state) => {
         state.loading = true
-        state.error = null
       })
-      .addCase(getCurrentUser.fulfilled, (state, action: PayloadAction<User>) => {
+      .addCase(getCurrentUser.fulfilled, (state, action) => {
         state.loading = false
+        state.isAuthenticated = true
         state.user = action.payload
       })
-      .addCase(getCurrentUser.rejected, (state, action) => {
+      .addCase(getCurrentUser.rejected, (state) => {
         state.loading = false
-        state.error = action.payload as string
+        state.isAuthenticated = false
         state.token = null
+        state.user = null
+      })
+      // 登出
+      .addCase(logout.fulfilled, (state) => {
+        state.isAuthenticated = false
+        state.token = null
+        state.user = null
       })
   },
 })
 
-export const { logout, clearError } = authSlice.actions
+export const { clearError } = authSlice.actions
 export default authSlice.reducer

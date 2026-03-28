@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux'
 import authReducer from './slices/authSlice'
+import characterReducer from './slices/characterSlice'
 import gameReducer from './slices/gameSlice'
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    characters: characterReducer,
     game: gameReducer,
   },
   middleware: (getDefaultMiddleware) =>

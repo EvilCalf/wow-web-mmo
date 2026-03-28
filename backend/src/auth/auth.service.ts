@@ -1,72 +1,63 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+  private users: Map<string, any> = new Map();
+  private emailToId: Map<string, string> = new Map();
+  private idCounter = 1;
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(identifier: string, password: string): Promise<any> {
-    // 支持用户名或邮箱登录
-    const user = await this.usersService.findByUsername(identifier) || 
-                 await this.usersService.findByEmail(identifier);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+  async validateUser(email: string, password: string): Promise<any> {
+    // 先检查内存中的用户
+    const userId = this.emailToId.get(email);
+    if (userId) {
+      const user = this.users.get(userId);
+      if (user && await bcrypt.compare(password, user.password)) {
+        const { password, ...result } = user;
+        return result;
+      }
     }
-    
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    
-    const { password: _, ...result } = user;
-    return result;
+    return null;
   }
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
+    const payload = { email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
-        username: user.username,
         email: user.email,
-        level: user.level,
-        role: user.role,
+        username: user.username,
       },
     };
   }
 
-  async register(registerDto: any) {
-    const { username, email, password } = registerDto;
-    
-    // 检查用户名是否已存在
-    const existingUserByUsername = await this.usersService.findByUsername(username);
-    if (existingUserByUsername) {
-      throw new UnauthorizedException('Username already exists');
+  async register(userData: any) {
+    // 检查邮箱是否已被注册
+    if (this.emailToId.has(userData.email)) {
+      throw new UnauthorizedException('邮箱已被注册');
     }
-    
-    // 检查邮箱是否已存在
-    const existingUserByEmail = await this.usersService.findByEmail(email);
-    if (existingUserByEmail) {
-      throw new UnauthorizedException('Email already exists');
-    }
-    
-    // 加密密码
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // 创建用户
-    const user = await this.usersService.create({
-      username,
-      email,
+
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const id = `user_${this.idCounter++}`;
+    const user = {
+      id,
+      email: userData.email,
+      username: userData.username || userData.email.split('@')[0],
       password: hashedPassword,
-    });
-    
-    const { password: _, ...result } = user;
-    return result;
+      createdAt: new Date(),
+    };
+
+    this.users.set(id, user);
+    this.emailToId.set(user.email, id);
+
+    return this.login(user);
   }
 }

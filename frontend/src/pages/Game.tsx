@@ -1,469 +1,405 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { leaveGame } from '@/store/slices/gameSlice'
-import gameEngine from '@/utils/gameEngine'
-import { LogOut, Settings, MessageSquare, Map, Users, Backpack } from 'lucide-react'
-
-const GameContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
-`
-
-const GameCanvas = styled.div`
-  width: 100%;
-  height: 100%;
-`
-
-const GameUI = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 100;
-`
-
-const TopBar = styled.div`
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  pointer-events: auto;
-`
-
-const PlayerInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 12px 20px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-`
-
-const PlayerName = styled.div`
-  font-size: 18px;
-  font-weight: bold;
-  color: #f0b429;
-`
-
-const PlayerLevel = styled.div`
-  font-size: 14px;
-  color: #94a3b8;
-`
-
-const ResourceBar = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 200px;
-`
-
-const BarContainer = styled.div`
-  width: 100%;
-  height: 12px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-`
-
-const HealthBar = styled.div<{ $percent: number }>`
-  height: 100%;
-  width: ${props => props.$percent}%;
-  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
-  transition: width 0.3s ease;
-`
-
-const ManaBar = styled.div<{ $percent: number }>`
-  height: 100%;
-  width: ${props => props.$percent}%;
-  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-  transition: width 0.3s ease;
-`
-
-const ActionBar = styled.div`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 12px;
-  pointer-events: auto;
-`
-
-const ActionButton = styled.button`
-  width: 48px;
-  height: 48px;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #cbd5e1;
-  cursor: pointer;
-  transition: all 0.2s;
-  backdrop-filter: blur(10px);
-
-  &:hover {
-    background: rgba(240, 180, 41, 0.2);
-    border-color: #f0b429;
-    color: #f0b429;
-  }
-`
-
-const SkillBar = styled.div`
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 12px;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  pointer-events: auto;
-  backdrop-filter: blur(10px);
-`
-
-const SkillButton = styled.button<{ $cooldown?: number }>`
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border: 2px solid rgba(240, 180, 41, 0.3);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-
-  &:hover {
-    border-color: #f0b429;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(240, 180, 41, 0.3);
-  }
-
-  &::before {
-    content: '${props => props.$cooldown || ''}';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: ${props => props.$cooldown ? 'flex' : 'none'};
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: #f0b429;
-  }
-`
-
-const SkillKey = styled.span`
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  font-size: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 2px 6px;
-  border-radius: 4px;
-  color: #f0b429;
-  font-weight: bold;
-`
-
-const ChatBox = styled.div`
-  position: absolute;
-  bottom: 30px;
-  left: 20px;
-  width: 350px;
-  height: 200px;
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  pointer-events: auto;
-  backdrop-filter: blur(10px);
-`
-
-const ChatMessages = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  margin-bottom: 12px;
-  font-size: 13px;
-  line-height: 1.5;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(240, 180, 41, 0.5);
-    border-radius: 3px;
-  }
-`
-
-const ChatMessage = styled.div`
-  margin-bottom: 8px;
-  color: #cbd5e1;
-
-  .sender {
-    color: #f0b429;
-    font-weight: bold;
-    margin-right: 8px;
-  }
-`
-
-const ChatInput = styled.input`
-  width: 100%;
-  padding: 8px 12px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(100, 116, 139, 0.3);
-  border-radius: 6px;
-  color: #ffffff;
-  font-size: 13px;
-
-  &:focus {
-    outline: none;
-    border-color: #f0b429;
-  }
-`
-
-const ExitModalOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: auto;
-  z-index: 200;
-`
-
-const ExitModal = styled.div`
-  background: rgba(26, 31, 58, 0.98);
-  border-radius: 16px;
-  padding: 40px;
-  width: 100%;
-  max-width: 400px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: center;
-`
-
-const ModalTitle = styled.h2`
-  margin: 0 0 16px 0;
-  font-size: 24px;
-  color: #f0b429;
-`
-
-const ModalText = styled.p`
-  margin: 0 0 32px 0;
-  color: #94a3b8;
-  line-height: 1.6;
-`
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 16px;
-`
-
-const Button = styled.button<{ $variant?: 'primary' | 'secondary' }>`
-  flex: 1;
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  ${props => props.$variant === 'primary' ? `
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    color: #ffffff;
-  ` : `
-    background: rgba(100, 116, 139, 0.2);
-    color: #cbd5e1;
-  `}
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-  }
-`
-
-const SKILLS = [
-  { id: 1, name: '火球术', key: '1', cooldown: 0 },
-  { id: 2, name: '寒冰箭', key: '2', cooldown: 0 },
-  { id: 3, name: '奥术飞弹', key: '3', cooldown: 0 },
-  { id: 4, name: '闪现', key: '4', cooldown: 12 },
-  { id: 5, name: '冰环', key: '5', cooldown: 0 },
-  { id: 6, name: '变形术', key: '6', cooldown: 0 },
-  { id: 7, name: '法力护盾', key: '7', cooldown: 0 },
-  { id: 8, name: '灼烧', key: '8', cooldown: 0 },
-  { id: 9, name: '炎爆术', key: '9', cooldown: 0 },
-]
-
-const MOCK_CHAT = [
-  { id: 1, sender: '系统', message: '欢迎来到魔兽世界 Web MMO！' },
-  { id: 2, sender: '阿尔萨斯', message: '为了联盟！' },
-  { id: 3, sender: '吉安娜', message: '注意周围的怪物。' },
-]
+import { fetchDungeons, startPVEBattle, executeSkill, claimRewards, clearBattle, fetchBattle } from '@/store/slices/gameSlice'
+import { fetchCharacter } from '@/store/slices/characterSlice'
+import { Button } from '@/components/UI/Button'
+import { Card } from '@/components/UI/Card'
+import { Layout } from '@/components/Layout'
 
 const Game = () => {
-  const [showExitModal, setShowExitModal] = useState(false)
-  const [chatInput, setChatInput] = useState('')
-  const [messages, setMessages] = useState(MOCK_CHAT)
-  const gameContainerRef = useRef<HTMLDivElement>(null)
-  
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { currentCharacter } = useAppSelector((state) => state.game)
+  const { isAuthenticated } = useAppSelector((state) => state.auth)
+  const { currentCharacter } = useAppSelector((state) => state.characters)
+  const { dungeons, battle, loading } = useAppSelector((state) => state.game)
+
+  const [selectedDungeon, setSelectedDungeon] = useState<string | null>(null)
+  const [polling, setPolling] = useState(false)
 
   useEffect(() => {
-    if (!currentCharacter || !gameContainerRef.current) return
-
-    // 初始化游戏引擎
-    gameEngine.init(gameContainerRef.current, currentCharacter)
-
-    return () => {
-      gameEngine.destroy()
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
     }
-  }, [currentCharacter])
+    if (!currentCharacter) {
+      navigate('/characters')
+      return
+    }
+    dispatch(fetchDungeons())
+    if (currentCharacter.id) {
+      dispatch(fetchCharacter(currentCharacter.id))
+    }
+  }, [isAuthenticated, navigate, dispatch, currentCharacter])
 
-  const handleExit = () => {
-    dispatch(leaveGame())
-    navigate('/character-select')
+  useEffect(() => {
+    if (battle && !battle.isOver && battle.currentActorId && !battle.actors.find(a => a.id === battle.currentActorId)?.isPlayer) {
+      // 非玩家回合，自动轮询
+      setPolling(true)
+      const interval = setInterval(() => {
+        if (battle?.id) {
+          dispatch(fetchBattle(battle.id))
+        }
+      }, 1000)
+      
+      return () => {
+        clearInterval(interval)
+        setPolling(false)
+      }
+    }
+  }, [battle, dispatch])
+
+  const handleStartBattle = (dungeonId: string) => {
+    if (currentCharacter?.id) {
+      dispatch(startPVEBattle({ characterId: currentCharacter.id, dungeonId }))
+    }
   }
 
-  const handleChatSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!chatInput.trim()) return
-
-    setMessages([
-      ...messages,
-      { id: Date.now(), sender: currentCharacter?.name || '我', message: chatInput },
-    ])
-    setChatInput('')
+  const handleExecuteSkill = (skillId: string, targetId: string) => {
+    if (battle?.id && currentCharacter?.id) {
+      dispatch(executeSkill({
+        battleId: battle.id,
+        actorId: 'player',
+        skillId,
+        targetId,
+      }))
+    }
   }
 
-  const healthPercent = currentCharacter ? (currentCharacter.health / currentCharacter.maxHealth) * 100 : 100
-  const manaPercent = currentCharacter ? (currentCharacter.mana / currentCharacter.maxMana) * 100 : 100
+  const handleClaimRewards = () => {
+    if (battle?.id && currentCharacter?.id) {
+      dispatch(claimRewards({ battleId: battle.id, characterId: currentCharacter.id }))
+        .then(() => {
+          dispatch(clearBattle())
+          if (currentCharacter?.id) {
+            dispatch(fetchCharacter(currentCharacter.id))
+          }
+        })
+    }
+  }
+
+  const getClassColor = (classId: string) => {
+    const colors: Record<string, string> = {
+      warrior: '#C79C6E',
+      paladin: '#F58CBA',
+      hunter: '#ABD473',
+      rogue: '#FFF569',
+      priest: '#FFFFFF',
+      death_knight: '#C41F3B',
+      shaman: '#0070DE',
+      mage: '#69CCF0',
+      warlock: '#9482C9',
+      monk: '#00FF96',
+    }
+    return colors[classId] || '#ffffff'
+  }
+
+  const getHealthPercent = (current: number, max: number) => {
+    return Math.max(0, Math.min(100, (current / max) * 100))
+  }
+
+  const isPlayerTurn = battle && !battle.isOver && battle.currentActorId === 'player'
+
+  if (battle) {
+    const player = battle.actors.find(a => a.isPlayer)
+    const enemies = battle.actors.filter(a => !a.isPlayer)
+    const targetEnemy = enemies.find(e => e.health > 0) || enemies[0]
+
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 p-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Battle Header */}
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h1 className="text-2xl font-bold text-amber-400">怒焰裂谷</h1>
+                <p className="text-gray-400">回合 {battle.turn}</p>
+              </div>
+              {battle.isOver && (
+                <Button onClick={() => dispatch(clearBattle())} className="bg-gray-600">
+                  返回
+                </Button>
+              )}
+            </div>
+
+            {/* Battle Area */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              {/* Player Side */}
+              <Card className="lg:col-span-1">
+                <h3 className="text-lg font-bold text-white mb-4">我方</h3>
+                {player && (
+                  <div className="p-4 rounded-lg bg-gray-800/50">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div
+                        className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
+                        style={{ backgroundColor: getClassColor(player.class || '') }}
+                      >
+                        {player.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="font-bold text-white">{player.name}</div>
+                        <div className="text-sm text-gray-400">
+                          等级 {player.level}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Health Bar */}
+                    <div className="mb-2">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-red-400">生命值</span>
+                        <span className="text-white">{player.health} / {player.maxHealth}</span>
+                      </div>
+                      <div className="w-full bg-gray-700 rounded-full h-4">
+                        <div
+                          className="bg-red-500 h-4 rounded-full transition-all"
+                          style={{ width: `${getHealthPercent(player.health, player.maxHealth)}%` }}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Resource Bar */}
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-blue-400">
+                          {player.resourceType === 'rage' ? '怒气' : player.resourceType === 'energy' ? '能量' : player.resourceType === 'focus' ? '集中值' : '法力值'}
+                        </span>
+                        <span className="text-white">{player.resource} / {player.maxResource}</span>
+                      </div>
+                      <div className="w-full bg-gray-700 rounded-full h-3">
+                        <div
+                          className={`h-3 rounded-full transition-all ${
+                            player.resourceType === 'rage' ? 'bg-red-600' :
+                            player.resourceType === 'energy' ? 'bg-yellow-500' :
+                            player.resourceType === 'focus' ? 'bg-green-500' : 'bg-blue-500'
+                          }`}
+                          style={{ width: `${(player.resource / player.maxResource) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Card>
+
+              {/* Battle Log */}
+              <Card className="lg:col-span-1">
+                <h3 className="text-lg font-bold text-white mb-4">战斗日志</h3>
+                <div className="h-64 overflow-y-auto space-y-2">
+                  {battle.logs.slice(-20).reverse().map((log, index) => (
+                    <div key={index} className="text-sm text-gray-300">
+                      {log.message}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Enemy Side */}
+              <Card className="lg:col-span-1">
+                <h3 className="text-lg font-bold text-white mb-4">敌方</h3>
+                {enemies.filter(e => e.health > 0).map((enemy) => (
+                  <div key={enemy.id} className="p-4 rounded-lg bg-red-900/30 mb-3">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-lg font-bold">
+                        {enemy.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="font-bold text-white">{enemy.name}</div>
+                        <div className="text-sm text-gray-400">
+                          等级 {enemy.level}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Health Bar */}
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-red-400">生命值</span>
+                        <span className="text-white">{enemy.health} / {enemy.maxHealth}</span>
+                      </div>
+                      <div className="w-full bg-gray-700 rounded-full h-4">
+                        <div
+                          className="bg-red-500 h-4 rounded-full transition-all"
+                          style={{ width: `${getHealthPercent(enemy.health, enemy.maxHealth)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {enemies.filter(e => e.health > 0).length === 0 && enemies.length > 0 && (
+                  <div className="text-center text-gray-400 py-8">
+                    所有敌人已被击败！
+                  </div>
+                )}
+              </Card>
+            </div>
+
+            {/* Battle Result */}
+            {battle.isOver && (
+              <Card className="mb-6 text-center py-8">
+                <h2 className={`text-3xl font-bold mb-4 ${
+                  battle.winner === 'player' ? 'text-amber-400' : 'text-red-500'
+                }`}>
+                  {battle.winner === 'player' ? '胜利！' : '失败...'}
+                </h2>
+                {battle.rewards && (
+                  <div className="mt-4">
+                    <p className="text-gray-300 mb-2">战斗奖励：</p>
+                    <p className="text-amber-400">经验值：+{battle.rewards.experience}</p>
+                    <p className="text-yellow-400">金币：+{battle.rewards.gold}</p>
+                  </div>
+                )}
+                {battle.winner === 'player' && (
+                  <Button
+                    onClick={handleClaimRewards}
+                    className="mt-6 bg-amber-600 hover:bg-amber-700"
+                  >
+                    领取奖励
+                  </Button>
+                )}
+              </Card>
+            )}
+
+            {/* Skills */}
+            {!battle.isOver && (
+              <Card>
+                <h3 className="text-lg font-bold text-white mb-4">
+                  {isPlayerTurn ? '选择技能' : '等待对手行动...'}
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <Button
+                    onClick={() => targetEnemy && handleExecuteSkill('auto_attack', targetEnemy.id)}
+                    disabled={!isPlayerTurn || !targetEnemy}
+                    className="bg-gray-600 hover:bg-gray-700"
+                  >
+                    普通攻击
+                  </Button>
+                </div>
+              </Card>
+            )}
+          </div>
+        </div>
+      </Layout>
+    )
+  }
 
   return (
-    <GameContainer>
-      <GameCanvas ref={gameContainerRef} />
-      
-      <GameUI>
-        <TopBar>
-          <PlayerInfo>
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-4">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-8">
             <div>
-              <PlayerName>{currentCharacter?.name}</PlayerName>
-              <PlayerLevel>等级 {currentCharacter?.level} {currentCharacter?.class}</PlayerLevel>
+              <h1 className="text-3xl font-bold text-amber-400">魔兽世界</h1>
+              <p className="text-gray-400">选择您的冒险</p>
             </div>
-            
-            <ResourceBar>
-              <BarContainer>
-                <HealthBar $percent={healthPercent} />
-              </BarContainer>
-              <BarContainer>
-                <ManaBar $percent={manaPercent} />
-              </BarContainer>
-            </ResourceBar>
-          </PlayerInfo>
+            <button
+              onClick={() => navigate('/characters')}
+              className="text-gray-400 hover:text-white"
+            >
+              返回角色选择
+            </button>
+          </div>
 
-          <ActionBar>
-            <ActionButton onClick={() => alert('打开背包')}>
-              <Backpack size={20} />
-            </ActionButton>
-            <ActionButton onClick={() => alert('打开地图')}>
-              <Map size={20} />
-            </ActionButton>
-            <ActionButton onClick={() => alert('打开社交')}>
-              <Users size={20} />
-            </ActionButton>
-            <ActionButton onClick={() => alert('打开设置')}>
-              <Settings size={20} />
-            </ActionButton>
-            <ActionButton onClick={() => setShowExitModal(true)}>
-              <LogOut size={20} />
-            </ActionButton>
-          </ActionBar>
-        </TopBar>
+          {/* Character Info */}
+          {currentCharacter && (
+            <Card className="mb-8">
+              <div className="flex items-center gap-6">
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-bold"
+                  style={{ backgroundColor: getClassColor(currentCharacter.class) }}
+                >
+                  {currentCharacter.name.charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-white">{currentCharacter.name}</h2>
+                  <p className="text-gray-400">
+                    等级 {currentCharacter.level} | {currentCharacter.class}
+                  </p>
+                  <div className="mt-2">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-400">经验值</span>
+                      <span className="text-amber-400">
+                        {currentCharacter.experience} / {currentCharacter.level * 1000}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-3">
+                      <div
+                        className="bg-amber-400 h-3 rounded-full"
+                        style={{ width: `${Math.min(100, (currentCharacter.experience / (currentCharacter.level * 1000)) * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div className="text-center">
+                    <div className="text-red-400 font-bold">{currentCharacter.stats.health}</div>
+                    <div className="text-gray-400">生命值</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-blue-400 font-bold">{currentCharacter.stats.mana}</div>
+                    <div className="text-gray-400">法力值</div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
 
-        <SkillBar>
-          {SKILLS.map((skill) => (
-            <SkillButton key={skill.id} $cooldown={skill.cooldown}>
-              <SkillKey>{skill.key}</SkillKey>
-              {skill.name}
-            </SkillButton>
-          ))}
-        </SkillBar>
+          {/* Dungeons */}
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-4">副本</h2>
+            {loading ? (
+              <div className="text-center text-gray-400 py-8">加载中...</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {dungeons.map((dungeon: any) => {
+                  const canEnter = currentCharacter &&
+                    currentCharacter.level >= dungeon.minLevel &&
+                    currentCharacter.level <= dungeon.maxLevel
 
-        <ChatBox>
-          <ChatMessages>
-            {messages.map((msg) => (
-              <ChatMessage key={msg.id}>
-                <span className="sender">[{msg.sender}]:</span>
-                {msg.message}
-              </ChatMessage>
-            ))}
-          </ChatMessages>
-          
-          <form onSubmit={handleChatSubmit}>
-            <ChatInput
-              type="text"
-              placeholder="输入消息..."
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-            />
-          </form>
-        </ChatBox>
-      </GameUI>
-
-      {showExitModal && (
-        <ExitModalOverlay>
-          <ExitModal>
-            <ModalTitle>退出游戏</ModalTitle>
-            <ModalText>确定要返回角色选择界面吗？当前游戏进度会自动保存。</ModalText>
-            
-            <ButtonGroup>
-              <Button $variant="secondary" onClick={() => setShowExitModal(false)}>
-                取消
-              </Button>
-              <Button $variant="primary" onClick={handleExit}>
-                确认退出
-              </Button>
-            </ButtonGroup>
-          </ExitModal>
-        </ExitModalOverlay>
-      )}
-    </GameContainer>
+                  return (
+                    <Card
+                      key={dungeon.id}
+                      className={`cursor-pointer transition-all ${
+                        selectedDungeon === dungeon.id ? 'border-amber-400' : ''
+                      } ${!canEnter ? 'opacity-50' : 'hover:border-gray-500'}`}
+                      onClick={() => canEnter && setSelectedDungeon(dungeon.id)}
+                    >
+                      <h3 className="text-xl font-bold text-white mb-2">{dungeon.name}</h3>
+                      <p className="text-gray-400 text-sm mb-3">{dungeon.description}</p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-400">
+                          等级 {dungeon.minLevel} - {dungeon.maxLevel}
+                        </span>
+                        <span className="text-sm text-gray-400">{dungeon.location}</span>
+                      </div>
+                      <div className="mt-3 text-xs text-gray-500">
+                        BOSS: {dungeon.bosses?.join(', ')}
+                      </div>
+                      {selectedDungeon === dungeon.id && (
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleStartBattle(dungeon.id)
+                          }}
+                          className="w-full mt-4 bg-amber-600 hover:bg-amber-700"
+                        >
+                          进入副本
+                        </Button>
+                      )}
+                      {!canEnter && (
+                        <div className="mt-3 text-sm text-red-400">
+                          等级不足，无法进入
+                        </div>
+                      )}
+                    </Card>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </Layout>
   )
 }
 

@@ -1,42 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
+  private users: Map<string, User> = new Map();
+  private emailIndex: Map<string, string> = new Map();
+  private idCounter = 1;
 
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.find({ relations: ['characters'] });
-  }
-
-  async findOne(id: number): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id }, relations: ['characters'] });
-  }
-
-  async findByUsername(username: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { username } });
+  async create(userData: any): Promise<User> {
+    const id = `user_${this.idCounter++}`;
+    const user: User = {
+      id,
+      email: userData.email,
+      username: userData.username || userData.email.split('@')[0],
+      password: userData.password,
+      createdAt: new Date(),
+    };
+    this.users.set(id, user);
+    this.emailIndex.set(user.email, id);
+    return user;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { email } });
+    const userId = this.emailIndex.get(email);
+    if (!userId) return null;
+    return this.users.get(userId) || null;
   }
 
-  async create(user: Partial<User>): Promise<User> {
-    const newUser = this.usersRepository.create(user);
-    return this.usersRepository.save(newUser);
-  }
-
-  async update(id: number, user: Partial<User>): Promise<User | null> {
-    await this.usersRepository.update(id, user);
-    return this.findOne(id);
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.usersRepository.delete(id);
+  async findById(id: string): Promise<User | null> {
+    return this.users.get(id) || null;
   }
 }

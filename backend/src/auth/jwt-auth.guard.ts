@@ -6,7 +6,7 @@ import { Request } from 'express';
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   private jwtService = new JwtService({
-    secret: 'wow-web-mmo-secret-key-2024',
+    secret: 'wow-web-mmo-secret-key-2026',
   });
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -19,7 +19,7 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: 'wow-web-mmo-secret-key-2024',
+        secret: 'wow-web-mmo-secret-key-2026',
       });
       request.user = { id: payload.sub, email: payload.email };
     } catch {

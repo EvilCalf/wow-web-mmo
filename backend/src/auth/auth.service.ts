@@ -1,19 +1,79 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
+import * as fs from 'fs';
+import * as path from 'path';
+
+interface StorageData {
+  users: Record<string, any>;
+  emailToId: Record<string, string>;
+  usernameToId: Record<string, string>;
+  idCounter: number;
+}
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   private users: Map<string, any> = new Map();
   private emailToId: Map<string, string> = new Map();
   private usernameToId: Map<string, string> = new Map();
   private idCounter = 1;
+  private readonly dataFilePath: string;
 
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-  ) {}
+  ) {
+    this.dataFilePath = path.join(__dirname, '../../data/users.json');
+  }
+
+  onModuleInit() {
+    this.loadFromFile();
+  }
+
+  private loadFromFile() {
+    try {
+      if (fs.existsSync(this.dataFilePath)) {
+        const data = fs.readFileSync(this.dataFilePath, 'utf-8');
+        const parsed: StorageData = JSON.parse(data);
+        
+        // 从对象恢复 Map
+        this.users = new Map(Object.entries(parsed.users || {}));
+        this.emailToId = new Map(Object.entries(parsed.emailToId || {}));
+        this.usernameToId = new Map(Object.entries(parsed.usernameToId || {}));
+        this.idCounter = parsed.idCounter || 1;
+      }
+    } catch (error) {
+      console.error('加载用户数据失败:', error);
+      // 如果加载失败，使用空数据
+      this.users = new Map();
+      this.emailToId = new Map();
+      this.usernameToId = new Map();
+      this.idCounter = 1;
+    }
+  }
+
+  private saveToFile() {
+    try {
+      // 确保目录存在
+      const dir = path.dirname(this.dataFilePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+
+      // Map 转对象
+      const data: StorageData = {
+        users: Object.fromEntries(this.users),
+        emailToId: Object.fromEntries(this.emailToId),
+        usernameToId: Object.fromEntries(this.usernameToId),
+        idCounter: this.idCounter,
+      };
+
+      fs.writeFileSync(this.dataFilePath, JSON.stringify(data, null, 2));
+    } catch (error) {
+      console.error('保存用户数据失败:', error);
+    }
+  }
 
   async validateUser(identifier: string, password: string): Promise<any> {
     // 先通过邮箱查找
@@ -64,6 +124,9 @@ export class AuthService {
     this.users.set(id, user);
     this.emailToId.set(user.email, id);
     this.usernameToId.set(user.username, id);
+    
+    // 保存到文件
+    this.saveToFile();
 
     return this.login(user);
   }

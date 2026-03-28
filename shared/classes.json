@@ -1,0 +1,364 @@
+{
+  "classes": [
+    {
+      "id": "warrior",
+      "name": "战士",
+      "nameEn": "Warrior",
+      "color": "#C79C6E",
+      "icon": "class_warrior.png",
+      "description": "战士是近身格斗专家，使用重甲和近战武器，能够承受大量伤害并造成可观的输出。",
+      "role": ["tank", "melee"],
+      "stats": {
+        "strength": 90,
+        "agility": 50,
+        "stamina": 100,
+        "intellect": 30,
+        "spirit": 40
+      },
+      "availableSpecs": [
+        {
+          "id": "arms",
+          "name": "武器",
+          "role": "melee",
+          "primaryStat": "strength"
+        },
+        {
+          "id": "fury",
+          "name": "狂怒",
+          "role": "melee", 
+          "primaryStat": "strength"
+        },
+        {
+          "id": "protection",
+          "name": "防护",
+          "role": "tank",
+          "primaryStat": "stamina"
+        }
+      ]
+    },
+    {
+      "id": "paladin",
+      "name": "圣骑士",
+      "nameEn": "Paladin",
+      "color": "#F58CBA",
+      "icon": "class_paladin.png",
+      "description": "圣骑士是圣光的战士，能够治疗盟友、承受伤害或作为近战输出。",
+      "role": ["tank", "healer", "melee"],
+      "stats": {
+        "strength": 70,
+        "agility": 40,
+        "stamina": 85,
+        "intellect": 60,
+        "spirit": 70
+      },
+      "availableSpecs": [
+        {
+          "id": "holy",
+          "name": "神圣",
+          "role": "healer",
+          "primaryStat": "intellect"
+        },
+        {
+          "id": "protection",
+          "name": "防护",
+          "role": "tank",
+          "primaryStat": "stamina"
+        },
+        {
+          "id": "retribution",
+          "name": "惩戒",
+          "role": "melee",
+          "primaryStat": "strength"
+        }
+      ]
+    },
+    {
+      "id": "hunter",
+      "name": "猎人",
+      "nameEn": "Hunter",
+      "color": "#ABD473",
+      "icon": "class_hunter.png",
+      "description": "猎人是远程物理输出，擅长使用弓箭或枪械，还能驯服野兽作为宠物。",
+      "role": ["ranged"],
+      "stats": {
+        "strength": 40,
+        "agility": 95,
+        "stamina": 75,
+        "intellect": 45,
+        "spirit": 50
+      },
+      "availableSpecs": [
+        {
+          "id": "beast_mastery",
+          "name": "野兽控制",
+          "role": "ranged",
+          "primaryStat": "agility"
+        },
+        {
+          "id": "marksmanship",
+          "name": "射击",
+          "role": "ranged",
+          "primaryStat": "agility"
+        },
+        {
+          "id": "survival",
+          "name": "生存",
+          "role": "melee",
+          "primaryStat": "agility"
+        }
+      ]
+    },
+    {
+      "id": "rogue",
+      "name": "潜行者",
+      "nameEn": "Rogue",
+      "color": "#FFF569",
+      "icon": "class_rogue.png",
+      "description": "潜行者是潜行专家，擅长使用匕首和毒药，在近距离造成爆发伤害。",
+      "role": ["melee"],
+      "stats": {
+        "strength": 50,
+        "agility": 100,
+        "stamina": 70,
+        "intellect": 25,
+        "spirit": 35
+      },
+      "availableSpecs": [
+        {
+          "id": "assassination",
+          "name": "奇袭",
+          "role": "melee",
+          "primaryStat": "agility"
+        },
+        {
+          "id": "outlaw",
+          "name": "狂徒",
+          "role": "melee",
+          "primaryStat": "agility"
+        },
+        {
+          "id": "subtlety",
+          "name": "敏锐",
+          "role": "melee",
+          "primaryStat": "agility"
+        }
+      ]
+    },
+    {
+      "id": "priest",
+      "name": "牧师",
+      "nameEn": "Priest",
+      "color": "#FFFFFF",
+      "icon": "class_priest.png",
+      "description": "牧师是神圣魔法的使用者，能够治疗盟友或使用暗影魔法伤害敌人。",
+      "role": ["healer", "ranged"],
+      "stats": {
+        "strength": 30,
+        "agility": 40,
+        "stamina": 65,
+        "intellect": 100,
+        "spirit": 90
+      },
+      "availableSpecs": [
+        {
+          "id": "discipline",
+          "name": "戒律",
+          "role": "healer",
+          "primaryStat": "intellect"
+        },
+        {
+          "id": "holy",
+          "name": "神圣",
+          "role": "healer",
+          "primaryStat": "intellect"
+        },
+        {
+          "id": "shadow",
+          "name": "暗影",
+          "role": "ranged",
+          "primaryStat": "intellect"
+        }
+      ]
+    },
+    {
+      "id": "death_knight",
+      "name": "死亡骑士",
+      "nameEn": "Death Knight",
+      "color": "#C41F3B",
+      "icon": "class_deathknight.png",
+      "description": "死亡骑士是符文魔法使用者，作为黑暗的战士能够承受伤害或输出。",
+      "role": ["tank", "melee"],
+      "stats": {
+        "strength": 85,
+        "agility": 55,
+        "stamina": 95,
+        "intellect": 40,
+        "spirit": 30
+      },
+      "availableSpecs": [
+        {
+          "id": "blood",
+          "name": "鲜血",
+          "role": "tank",
+          "primaryStat": "stamina"
+        },
+        {
+          "id": "frost",
+          "name": "冰霜",
+          "role": "melee",
+          "primaryStat": "strength"
+        },
+        {
+          "id": "unholy",
+          "name": "邪恶",
+          "role": "melee",
+          "primaryStat": "strength"
+        }
+      ]
+    },
+    {
+      "id": "shaman",
+      "name": "萨满祭司",
+      "nameEn": "Shaman",
+      "color": "#0070DE",
+      "icon": "class_shaman.png",
+      "description": "萨满祭司是元素的掌控者，能够使用元素魔法伤害敌人，治疗盟友，或作为近战输出。",
+      "role": ["healer", "ranged", "melee"],
+      "stats": {
+        "strength": 60,
+        "agility": 50,
+        "stamina": 75,
+        "intellect": 85,
+        "spirit": 70
+      },
+      "availableSpecs": [
+        {
+          "id": "elemental",
+          "name": "元素",
+          "role": "ranged",
+          "primaryStat": "intellect"
+        },
+        {
+          "id": "enhancement",
+          "name": "增强",
+          "role": "melee",
+          "primaryStat": "agility"
+        },
+        {
+          "id": "restoration",
+          "name": "恢复",
+          "role": "healer",
+          "primaryStat": "intellect"
+        }
+      ]
+    },
+    {
+      "id": "mage",
+      "name": "法师",
+      "nameEn": "Mage",
+      "color": "#69CCF0",
+      "icon": "class_mage.png",
+      "description": "法师是奥术魔法大师，使用强大的火焰、冰霜和奥术魔法造成远距离伤害。",
+      "role": ["ranged"],
+      "stats": {
+        "strength": 25,
+        "agility": 35,
+        "stamina": 60,
+        "intellect": 105,
+        "spirit": 65
+      },
+      "availableSpecs": [
+        {
+          "id": "arcane",
+          "name": "奥术",
+          "role": "ranged",
+          "primaryStat": "intellect"
+        },
+        {
+          "id": "fire",
+          "name": "火焰",
+          "role": "ranged",
+          "primaryStat": "intellect"
+        },
+        {
+          "id": "frost",
+          "name": "冰霜",
+          "role": "ranged",
+          "primaryStat": "intellect"
+        }
+      ]
+    },
+    {
+      "id": "warlock",
+      "name": "术士",
+      "nameEn": "Warlock",
+      "color": "#9482C9",
+      "icon": "class_warlock.png",
+      "description": "术士是恶魔魔法使用者，能够召唤恶魔仆从，使用黑暗魔法造成伤害。",
+      "role": ["ranged"],
+      "stats": {
+        "strength": 30,
+        "agility": 35,
+        "stamina": 65,
+        "intellect": 100,
+        "spirit": 60
+      },
+      "availableSpecs": [
+        {
+          "id": "affliction",
+          "name": "痛苦",
+          "role": "ranged",
+          "primaryStat": "intellect"
+        },
+        {
+          "id": "demonology",
+          "name": "恶魔学识",
+          "role": "ranged",
+          "primaryStat": "intellect"
+        },
+        {
+          "id": "destruction",
+          "name": "毁灭",
+          "role": "ranged",
+          "primaryStat": "intellect"
+        }
+      ]
+    },
+    {
+      "id": "monk",
+      "name": "武僧",
+      "nameEn": "Monk",
+      "color": "#00FF96",
+      "icon": "class_monk.png",
+      "description": "武僧是武术大师，能够使用真气治疗盟友、承受伤害或作为近战输出。",
+      "role": ["tank", "healer", "melee"],
+      "stats": {
+        "strength": 65,
+        "agility": 85,
+        "stamina": 80,
+        "intellect": 50,
+        "spirit": 60
+      },
+      "availableSpecs": [
+        {
+          "id": "brewmaster",
+          "name": "酒仙",
+          "role": "tank",
+          "primaryStat": "stamina"
+        },
+        {
+          "id": "mistweaver",
+          "name": "织雾",
+          "role": "healer",
+          "primaryStat": "intellect"
+        },
+        {
+          "id": "windwalker",
+          "name": "踏风",
+          "role": "melee",
+          "primaryStat": "agility"
+        }
+      ]
+    }
+  ]
+}

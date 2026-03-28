@@ -1,0 +1,115 @@
+{
+  "talents": {
+    "warrior": {
+      "arms": [
+        {
+          "tier": 1,
+          "column": 1,
+          "id": "warrior_arms_t1_c1",
+          "name": "战争机器",
+          "nameEn": "War Machine",
+          "icon": "ability_warrior_warmachine.png",
+          "maxPoints": 1,
+          "description": "你的移动速度提高15%，近战自动攻击有10%几率产生额外5点怒气。",
+          "effects": [
+            {
+              "type": "movement_speed",
+              "multiplier": 1.15
+            },
+            {
+              "type": "proc",
+              "chance": 0.1,
+              "effect": {
+                "resource": "rage",
+                "amount": 5
+              }
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "column": 2,
+          "id": "warrior_arms_t1_c2",
+          "name": "冲锋",
+          "nameEn": "Charge",
+          "icon": "ability_warrior_charge.png",
+          "maxPoints": 1,
+          "description": "向目标冲锋，使其昏迷1.5秒，并产生20点怒气。",
+          "cooldown": 20,
+          "range": "8-25",
+          "effects": [
+            {
+              "type": "stun",
+              "duration": 1.5
+            },
+            {
+              "type": "resource",
+              "resource": "rage",
+              "amount": 20
+            }
+          ]
+        }
+      ]
+    },
+    "paladin": {
+      "holy": [
+        {
+          "tier": 1,
+          "column": 1,
+          "id": "paladin_holy_t1_c1",
+          "name": "圣光灌注",
+          "nameEn": "Infusion of Light",
+          "icon": "spell_holy_infusionoflight.png",
+          "maxPoints": 2,
+          "description": "你的圣光闪现和圣光术有15%/30%几率使你的下一个圣光闪现的施法时间减少100%。",
+          "effects": [
+            {
+              "type": "proc",
+              "chance": 0.15,
+              "perPoint": 0.15,
+              "effect": {
+                "buff": "圣光灌注",
+                "duration": 15,
+                "effect": {
+                  "cast_time_reduction": 1.0,
+                  "spells": ["flash_of_light"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "mage": {
+      "fire": [
+        {
+          "tier": 1,
+          "column": 1,
+          "id": "mage_fire_t1_c1",
+          "name": "火焰连击",
+          "nameEn": "Pyroclasm",
+          "icon": "spell_fire_pyroclasm.png",
+          "maxPoints": 2,
+          "description": "你的火焰冲击暴击时有50%/100%几率使你的下一个炎爆术的施法时间减少100%。",
+          "effects": [
+            {
+              "type": "proc",
+              "chance": 0.5,
+              "perPoint": 0.5,
+              "trigger": "crit",
+              "spells": ["fire_blast"],
+              "effect": {
+                "buff": "火焰连击",
+                "duration": 10,
+                "effect": {
+                  "cast_time_reduction": 1.0,
+                  "spells": ["pyroblast"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

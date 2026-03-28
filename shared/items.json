@@ -1,0 +1,313 @@
+{
+  "items": [
+    {
+      "id": "item_1",
+      "name": "灰烬使者",
+      "nameEn": "Ashbringer",
+      "icon": "inv_sword_62.png",
+      "type": "weapon",
+      "subType": "two_hand_sword",
+      "quality": "legendary",
+      "level": 60,
+      "itemLevel": 85,
+      "bindType": "pickup",
+      "slot": "two_hand",
+      "stats": {
+        "strength": 38,
+        "stamina": 20,
+        "crit_chance": 0.02
+      },
+      "damage": {
+        "min": 285,
+        "max": 430,
+        "speed": 3.6,
+        "dps": 99.3
+      },
+      "effects": [
+        {
+          "type": "passive",
+          "description": "对亡灵造成的伤害提高200点。"
+        }
+      ],
+      "description": "圣光的正义之力在剑身中涌动。",
+      "sellPrice": 1000000
+    },
+    {
+      "id": "item_2",
+      "name": "雷霆之怒，逐风者的祝福之剑",
+      "nameEn": "Thunderfury, Blessed Blade of the Windseeker",
+      "icon": "inv_sword_39.png",
+      "type": "weapon",
+      "subType": "one_hand_sword",
+      "quality": "legendary",
+      "level": 60,
+      "itemLevel": 80,
+      "bindType": "pickup",
+      "slot": "main_hand",
+      "stats": {
+        "strength": 19,
+        "agility": 15,
+        "stamina": 17,
+        "nature_resistance": 9
+      },
+      "damage": {
+        "min": 44,
+        "max": 115,
+        "speed": 1.9,
+        "dps": 53.9
+      },
+      "effects": [
+        {
+          "type": "proc",
+          "chance": 0.2,
+          "description": "攻击时对目标造成自然伤害，并降低其自然抗性25点，持续30秒。"
+        }
+      ],
+      "description": "风王子桑德兰的佩剑，蕴含着风元素的强大力量。",
+      "sellPrice": 950000
+    },
+    {
+      "id": "item_3",
+      "name": "萨弗拉斯，炎魔拉格纳罗斯之手",
+      "nameEn": "Sulfuras, Hand of Ragnaros",
+      "icon": "inv_hammer_13.png",
+      "type": "weapon",
+      "subType": "two_hand_mace",
+      "quality": "legendary",
+      "level": 60,
+      "itemLevel": 80,
+      "bindType": "pickup",
+      "slot": "two_hand",
+      "stats": {
+        "strength": 12,
+        "stamina": 24
+      },
+      "damage": {
+        "min": 223,
+        "max": 372,
+        "speed": 3.7,
+        "dps": 80.4
+      },
+      "effects": [
+        {
+          "type": "proc",
+          "chance": 0.05,
+          "description": "对目标造成273到333点火焰伤害。"
+        }
+      ],
+      "description": "炎魔拉格纳罗斯的专属武器，蕴含着火焰的毁灭之力。",
+      "sellPrice": 900000
+    },
+    {
+      "id": "item_4",
+      "name": "巨龙复仇者",
+      "nameEn": "Dragonslayer",
+      "icon": "inv_axe_12.png",
+      "type": "weapon",
+      "subType": "two_hand_axe",
+      "quality": "epic",
+      "level": 60,
+      "itemLevel": 75,
+      "bindType": "pickup",
+      "slot": "two_hand",
+      "stats": {
+        "strength": 22,
+        "stamina": 18
+      },
+      "damage": {
+        "min": 198,
+        "max": 298,
+        "speed": 3.4,
+        "dps": 72.9
+      },
+      "effects": [
+        {
+          "type": "passive",
+          "description": "对龙类造成的伤害提高60点。"
+        }
+      ],
+      "description": "屠龙勇士的象征，对龙族有额外伤害加成。",
+      "sellPrice": 500000
+    },
+    {
+      "id": "item_5",
+      "name": "暗影烈焰法杖",
+      "nameEn": "Shadowflame Staff",
+      "icon": "inv_staff_18.png",
+      "type": "weapon",
+      "subType": "staff",
+      "quality": "epic",
+      "level": 60,
+      "itemLevel": 78,
+      "bindType": "pickup",
+      "slot": "two_hand",
+      "stats": {
+        "intellect": 42,
+        "stamina": 26,
+        "spell_power": 84,
+        "crit_chance": 0.02
+      },
+      "description": "蕴含着暗影和火焰能量的强大法杖，是法系输出的极品。",
+      "sellPrice": 600000
+    },
+    {
+      "id": "item_6",
+      "name": "奎尔塞拉",
+      "nameEn": "Quel'Serrar",
+      "icon": "inv_sword_48.png",
+      "type": "weapon",
+      "subType": "one_hand_sword",
+      "quality": "epic",
+      "level": 60,
+      "itemLevel": 71,
+      "bindType": "equip",
+      "slot": "main_hand",
+      "stats": {
+        "strength": 13,
+        "stamina": 12
+      },
+      "damage": {
+        "min": 84,
+        "max": 157,
+        "speed": 2.0,
+        "dps": 60.3
+      },
+      "effects": [
+        {
+          "type": "proc",
+          "chance": 0.02,
+          "description": "防御等级提高30点，持续10秒。"
+        }
+      ],
+      "description": "战士的象征之剑，拥有卓越的防御属性。",
+      "sellPrice": 400000
+    },
+    {
+      "id": "item_7",
+      "name": "红龙防护者",
+      "nameEn": "Red Dragonscale Protector",
+      "icon": "inv_shield_06.png",
+      "type": "armor",
+      "subType": "shield",
+      "quality": "epic",
+      "level": 60,
+      "itemLevel": 77,
+      "bindType": "pickup",
+      "slot": "off_hand",
+      "armor": 2958,
+      "block": 68,
+      "stats": {
+        "stamina": 19,
+        "fire_resistance": 24
+      },
+      "description": "用红龙鳞片制作的盾牌，拥有极强的火焰抗性。",
+      "sellPrice": 450000
+    },
+    {
+      "id": "item_8",
+      "name": "恢复宝石",
+      "nameEn": "Restoration Gem",
+      "icon": "inv_jewel_35.png",
+      "type": "armor",
+      "subType": "trinket",
+      "quality": "epic",
+      "level": 60,
+      "itemLevel": 76,
+      "bindType": "pickup",
+      "slot": "trinket",
+      "stats": {
+        "healing_power": 66,
+        "mana_regen": 5
+      },
+      "description": "牧师和圣骑士的极品治疗饰品。",
+      "sellPrice": 350000
+    },
+    {
+      "id": "item_9",
+      "name": "奈萨里奥之泪",
+      "nameEn": "Neltharion's Tear",
+      "icon": "inv_jewel_40.png",
+      "type": "armor",
+      "subType": "trinket",
+      "quality": "epic",
+      "level": 60,
+      "itemLevel": 78,
+      "bindType": "pickup",
+      "slot": "trinket",
+      "stats": {
+        "spell_power": 44,
+        "spell_hit": 0.02
+      },
+      "description": "死亡之翼的精华凝聚，法系输出的极品饰品。",
+      "sellPrice": 550000
+    },
+    {
+      "id": "item_10",
+      "name": "屠龙者的纹章",
+      "nameEn": "Dragonslayer's Signet",
+      "icon": "inv_jewel_29.png",
+      "type": "armor",
+      "subType": "ring",
+      "quality": "epic",
+      "level": 60,
+      "itemLevel": 74,
+      "bindType": "pickup",
+      "slot": "finger",
+      "stats": {
+        "strength": 14,
+        "agility": 12,
+        "stamina": 16,
+        "hit_chance": 0.01
+      },
+      "description": "屠龙勇士的荣耀象征，近战输出的极品戒指。",
+      "sellPrice": 300000
+    },
+    {
+      "id": "potion_1",
+      "name": "超级治疗药水",
+      "nameEn": "Super Healing Potion",
+      "icon": "inv_potion_52.png",
+      "type": "consumable",
+      "subType": "potion",
+      "quality": "uncommon",
+      "level": 55,
+      "bindType": "none",
+      "slot": "consumable",
+      "stackSize": 20,
+      "effects": [
+        {
+          "type": "heal",
+          "min": 1050,
+          "max": 1750,
+          "cooldown": 120
+        }
+      ],
+      "description": "使用：恢复1050到1750点生命值。",
+      "sellPrice": 5000
+    },
+    {
+      "id": "potion_2",
+      "name": "超级法力药水",
+      "nameEn": "Super Mana Potion",
+      "icon": "inv_potion_54.png",
+      "type": "consumable",
+      "subType": "potion",
+      "quality": "uncommon",
+      "level": 55,
+      "bindType": "none",
+      "slot": "consumable",
+      "stackSize": 20,
+      "effects": [
+        {
+          "type": "resource",
+          "resource": "mana",
+          "min": 1350,
+          "max": 2250,
+          "cooldown": 120
+        }
+      ],
+      "description": "使用：恢复1350到2250点法力值。",
+      "sellPrice": 6000
+    }
+  ]
+}

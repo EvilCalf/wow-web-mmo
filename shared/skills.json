@@ -1,0 +1,368 @@
+{
+  "skills": [
+    {
+      "id": "warrior_heroic_strike",
+      "name": "英勇打击",
+      "nameEn": "Heroic Strike",
+      "icon": "ability_meleedamage.png",
+      "class": "warrior",
+      "specs": ["arms", "fury", "protection"],
+      "type": "melee",
+      "cost": {
+        "resource": "rage",
+        "amount": 15
+      },
+      "castTime": 0,
+      "cooldown": 3,
+      "range": 5,
+      "damage": {
+        "type": "physical",
+        "base": 120,
+        "scaling": {
+          "stat": "strength",
+          "multiplier": 0.8
+        }
+      },
+      "description": "强力的近战攻击，对目标造成额外伤害。"
+    },
+    {
+      "id": "warrior_shield_slam",
+      "name": "盾牌猛击",
+      "nameEn": "Shield Slam",
+      "icon": "inv_shield_06.png",
+      "class": "warrior",
+      "specs": ["protection"],
+      "type": "melee",
+      "cost": {
+        "resource": "rage",
+        "amount": 20
+      },
+      "castTime": 0,
+      "cooldown": 6,
+      "range": 5,
+      "damage": {
+        "type": "physical",
+        "base": 150,
+        "scaling": {
+          "stat": "stamina",
+          "multiplier": 0.5
+        }
+      },
+      "effects": [
+        {
+          "type": "threat",
+          "multiplier": 2.0
+        }
+      ],
+      "description": "用盾牌猛击目标，造成大量伤害并产生高威胁值。"
+    },
+    {
+      "id": "paladin_holy_light",
+      "name": "圣光术",
+      "nameEn": "Holy Light",
+      "icon": "spell_holy_holybolt.png",
+      "class": "paladin",
+      "specs": ["holy"],
+      "type": "heal",
+      "cost": {
+        "resource": "mana",
+        "amount": 120
+      },
+      "castTime": 2.5,
+      "cooldown": 0,
+      "range": 40,
+      "heal": {
+        "base": 300,
+        "scaling": {
+          "stat": "intellect",
+          "multiplier": 1.2
+        }
+      },
+      "description": "召唤神圣之光治疗友方目标。"
+    },
+    {
+      "id": "paladin_avenging_wrath",
+      "name": "复仇之怒",
+      "nameEn": "Avenging Wrath",
+      "icon": "spell_holy_avenginewrath.png",
+      "class": "paladin",
+      "specs": ["retribution"],
+      "type": "buff",
+      "cost": {
+        "resource": "mana",
+        "amount": 50
+      },
+      "castTime": 0,
+      "cooldown": 120,
+      "range": 0,
+      "duration": 20,
+      "effects": [
+        {
+          "type": "damage_bonus",
+          "multiplier": 1.2,
+          "school": "all"
+        }
+      ],
+      "description": "激活时，你造成的所有伤害提高20%，持续20秒。"
+    },
+    {
+      "id": "hunter_arcane_shot",
+      "name": "奥术射击",
+      "nameEn": "Arcane Shot",
+      "icon": "spell_arcane_shot.png",
+      "class": "hunter",
+      "specs": ["beast_mastery", "marksmanship"],
+      "type": "ranged",
+      "cost": {
+        "resource": "focus",
+        "amount": 15
+      },
+      "castTime": 0,
+      "cooldown": 5,
+      "range": 40,
+      "damage": {
+        "type": "arcane",
+        "base": 180,
+        "scaling": {
+          "stat": "agility",
+          "multiplier": 0.7
+        }
+      },
+      "description": "射出奥术能量之箭，对目标造成奥术伤害。"
+    },
+    {
+      "id": "rogue_backstab",
+      "name": "背刺",
+      "nameEn": "Backstab",
+      "icon": "ability_stealth.png",
+      "class": "rogue",
+      "specs": ["assassination", "subtlety"],
+      "type": "melee",
+      "cost": {
+        "resource": "energy",
+        "amount": 35
+      },
+      "castTime": 0,
+      "cooldown": 0,
+      "range": 5,
+      "requirements": ["behind_target"],
+      "damage": {
+        "type": "physical",
+        "base": 200,
+        "scaling": {
+          "stat": "agility",
+          "multiplier": 0.9
+        },
+        "critBonus": 1.5
+      },
+      "description": "从背后袭击目标，造成大量伤害，爆击几率提高。"
+    },
+    {
+      "id": "priest_power_word_shield",
+      "name": "真言术：盾",
+      "nameEn": "Power Word: Shield",
+      "icon": "spell_holy_powerwordshield.png",
+      "class": "priest",
+      "specs": ["discipline"],
+      "type": "shield",
+      "cost": {
+        "resource": "mana",
+        "amount": 80
+      },
+      "castTime": 0,
+      "cooldown": 7.5,
+      "range": 40,
+      "absorb": {
+        "base": 250,
+        "scaling": {
+          "stat": "intellect",
+          "multiplier": 0.8
+        }
+      },
+      "duration": 15,
+      "description": "为友方目标施加护盾，吸收伤害，持续15秒。"
+    },
+    {
+      "id": "priest_mind_flay",
+      "name": "精神鞭笞",
+      "nameEn": "Mind Flay",
+      "icon": "spell_shadow_mindflay.png",
+      "class": "priest",
+      "specs": ["shadow"],
+      "type": "channeled",
+      "cost": {
+        "resource": "mana",
+        "amount": 40
+      },
+      "castTime": 3,
+      "channeled": true,
+      "ticks": 3,
+      "cooldown": 0,
+      "range": 40,
+      "damage": {
+        "type": "shadow",
+        "base": 60,
+        "perTick": true,
+        "scaling": {
+          "stat": "intellect",
+          "multiplier": 0.3
+        }
+      },
+      "effects": [
+        {
+          "type": "slow",
+          "amount": 0.5,
+          "duration": 3
+        }
+      ],
+      "description": "用暗影能量攻击目标的精神，在3秒内造成暗影伤害并减速目标50%。"
+    },
+    {
+      "id": "deathknight_death_coil",
+      "name": "死亡缠绕",
+      "nameEn": "Death Coil",
+      "icon": "spell_shadow_deathcoil.png",
+      "class": "death_knight",
+      "specs": ["frost", "unholy"],
+      "type": "ranged",
+      "cost": {
+        "resource": "runic_power",
+        "amount": 40
+      },
+      "castTime": 0,
+      "cooldown": 0,
+      "range": 30,
+      "damage": {
+        "type": "shadow",
+        "base": 220,
+        "scaling": {
+          "stat": "strength",
+          "multiplier": 0.7
+        }
+      },
+      "description": "释放黑暗能量攻击目标，造成暗影伤害。"
+    },
+    {
+      "id": "shaman_lightning_bolt",
+      "name": "闪电箭",
+      "nameEn": "Lightning Bolt",
+      "icon": "spell_nature_lightning.png",
+      "class": "shaman",
+      "specs": ["elemental"],
+      "type": "ranged",
+      "cost": {
+        "resource": "mana",
+        "amount": 100
+      },
+      "castTime": 2,
+      "cooldown": 0,
+      "range": 40,
+      "damage": {
+        "type": "nature",
+        "base": 250,
+        "scaling": {
+          "stat": "intellect",
+          "multiplier": 0.9
+        }
+      },
+      "description": "向目标射出闪电箭，造成自然伤害。"
+    },
+    {
+      "id": "mage_fireball",
+      "name": "火球术",
+      "nameEn": "Fireball",
+      "icon": "spell_fire_flamebolt.png",
+      "class": "mage",
+      "specs": ["fire"],
+      "type": "ranged",
+      "cost": {
+        "resource": "mana",
+        "amount": 90
+      },
+      "castTime": 2.5,
+      "cooldown": 0,
+      "range": 40,
+      "damage": {
+        "type": "fire",
+        "base": 280,
+        "scaling": {
+          "stat": "intellect",
+          "multiplier": 1.0
+        }
+      },
+      "effects": [
+        {
+          "type": "dot",
+          "name": "点燃",
+          "duration": 4,
+          "damage": 0.2,
+          "tickRate": 2
+        }
+      ],
+      "description": "发射火球攻击目标，造成火焰伤害并点燃目标。"
+    },
+    {
+      "id": "warlock_corruption",
+      "name": "腐蚀术",
+      "nameEn": "Corruption",
+      "icon": "spell_shadow_abominationexplosion.png",
+      "class": "warlock",
+      "specs": ["affliction"],
+      "type": "dot",
+      "cost": {
+        "resource": "mana",
+        "amount": 70
+      },
+      "castTime": 1.5,
+      "cooldown": 0,
+      "range": 40,
+      "duration": 18,
+      "ticks": 6,
+      "damage": {
+        "type": "shadow",
+        "base": 65,
+        "perTick": true,
+        "scaling": {
+          "stat": "intellect",
+          "multiplier": 0.35
+        }
+      },
+      "description": "腐蚀目标，在18秒内造成持续暗影伤害。"
+    },
+    {
+      "id": "monk_rising_sun_kick",
+      "name": "旭日东升踢",
+      "nameEn": "Rising Sun Kick",
+      "icon": "ability_monk_risingsunkick.png",
+      "class": "monk",
+      "specs": ["windwalker"],
+      "type": "melee",
+      "cost": {
+        "resource": "chi",
+        "amount": 2
+      },
+      "castTime": 0,
+      "cooldown": 8,
+      "range": 5,
+      "damage": {
+        "type": "physical",
+        "base": 240,
+        "scaling": {
+          "stat": "agility",
+          "multiplier": 0.85
+        }
+      },
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "物理易伤",
+          "duration": 10,
+          "effect": {
+            "damage_taken": 1.1
+          }
+        }
+      ],
+      "description": "强力踢击，造成物理伤害并使目标受到的物理伤害提高10%。"
+    }
+  ]
+}

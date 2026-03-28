@@ -1,0 +1,17 @@
+{
+  "name": "wow-web-mmo",
+  "version": "1.0.0",
+  "description": "World of Warcraft Web MMO - Turn based card game",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run start:dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "start": "cd backend && npm run start:prod",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
+  },
+  "keywords": ["wow", "mmo", "webgame"],
+  "author": "EvilBot",
+  "license": "MIT"
+}
